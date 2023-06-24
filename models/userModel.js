@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "The password is reqquired "],
     minLength: [8, "Password is too shot!"],
+    select: false,
     // validate: {
     //   validator: validator.isStrongPassword,
     //   message: "invalid passowrd",
@@ -46,6 +47,12 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

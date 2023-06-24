@@ -7,10 +7,12 @@ const {
 } = require("../controllers/userController");
 
 const { signup } = require("../controllers/authController");
+const { login } = require("../controllers/authController");
 
 const router = require("express").Router();
 
 router.post("/signup", signup);
+router.post("/login", login);
 
 router.route(`/`).get(getAllUsers).post(createUser);
 
