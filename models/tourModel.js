@@ -85,9 +85,10 @@ tourSchema.pre("save", function (next) {
 //   this.find({ difficulty: { $ne: "easy" } });
 //   next();
 // });
-tourSchema.virtual("durationWeek").get(function () {
-  return this.duration / 7;
-});
+// tourSchema.virtual("durationWeek").get(function () {
+//   return this.duration / 7;
+// }
+
 const Tour = mongoose.model("Tour", tourSchema);
 
 module.exports = Tour;

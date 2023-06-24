@@ -1,10 +1,12 @@
 const express = require("express");
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
+var morgan = require("morgan");
 
 const errorController = require("./controllers/errorController");
 const AppError = require("./utils/appError");
 const app = express();
+app.use(morgan("dev"));
 app.use(express.json());
 
 app.use("/api/v1/tours", tourRouter);
