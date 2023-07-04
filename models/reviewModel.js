@@ -36,10 +36,11 @@ const reviewSechma = new mongoose.Schema(
 );
 
 reviewSechma.pre(/^find/, function (next) {
-  this.populate([
-    { path: "user", select: "-__v -passwordChangedAt" },
-    { path: "tour" },
-  ]);
+  // this.populate([
+  //   { path: "user", select: "-__v -passwordChangedAt" },
+  //   { path: "tour" },
+  // ]);
+  this.populate({ path: "user", select: "-__v -passwordChangedAt" });
   next();
 });
 const Review = mongoose.model("Review", reviewSechma);

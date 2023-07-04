@@ -3,44 +3,18 @@ const Tour = require("../models/tourModel");
 const APIFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const { deleteOne } = require("./handlerFactory");
+const {
+  deleteOne,
+  updateOne,
+  getOne,
+  getAll,
+  createOne,
+} = require("./handlerFactory");
 
-module.exports.getAllTours = catchAsync(async (req, res) => {
-  let qureyObj = { ...req.query };
-  let apiFeatures = new APIFeatures(Tour, qureyObj)
-    .filter()
-    .sort()
-    .limitFields();
-  apiFeatures = await apiFeatures.paginate(Tour);
-  const tours = await apiFeatures.query;
-  res.status(200).json({
-    data: tours,
-    status: "sucess",
-    meta: apiFeatures.meta,
-  });
-});
-module.exports.getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id).populate("reviews");
-  if (!tour) {
-    return next(new AppError("No tour found with that ID", 404));
-  }
-  res.status(200).json({ data: tour, status: "sucess" });
-});
-module.exports.createTour = catchAsync(async (req, res) => {
-  const tour = await Tour.create(req.body);
-  console.log(tour);
-  res.status(200).json({ data: tour, status: "sucess" });
-});
-module.exports.updateTour = catchAsync(async (req, res) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  if (!tour) {
-    return next(new AppError("No tour found with that ID", 404));
-  }
-  res.status(200).json({ data: tour, status: "sucess" });
-});
+module.exports.getAllTours = getAll(Tour);
+module.exports.getTour = getOne(Tour, "reviews");
+module.exports.createTour = createOne(Tour);
+module.exports.updateTour = updateOne(Tour);
 
 //old way just to remeber
 

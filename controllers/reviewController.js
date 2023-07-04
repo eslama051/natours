@@ -2,7 +2,7 @@ const Review = require("../models/reviewModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
-const { deleteOne } = require("./handlerFactory");
+const { deleteOne, updateOne, createOne } = require("./handlerFactory");
 
 module.exports.getAllReviews = catchAsync(async (req, res) => {
   if (req.params.tourId) req.query.tour = req.params.tourId;
@@ -30,14 +30,13 @@ module.exports.getReview = catchAsync(async (req, res, next) => {
   res.status(200).json({ data: review, status: "sucess" });
 });
 
-module.exports.createReview = catchAsync(async (req, res) => {
+exports.setReviewsIDs = (req, res, next) => {
   if (!req.body.tour) req.body.tour = req.params.tourId;
   if (!req.body.user) req.body.user = req.user.id;
-
-  const newReview = await Review.create(req.body);
-  res.status(200).json({ data: newReview, status: "sucess" });
-});
-
+  next();
+};
+module.exports.createReview = createOne(Review);
+module.exports.updateReview = updateOne(Review);
 module.exports.deleteReview = deleteOne(Review);
 
 // module.exports.deleteReview = async (req, res) => {

@@ -6,6 +6,7 @@ const {
   deleteUser,
   updateMe,
   deleteMe,
+  getMe,
 } = require("../controllers/userController");
 
 const {
@@ -24,6 +25,7 @@ router.post("/login", login);
 router.post("/forget-password", forgetPassword);
 router.post("/reset-password/:token", resetPassword);
 router.patch("/update-password", protect, updatePassword);
+router.get("/Me", protect, getMe, getUser);
 router.post("/updateMe", protect, updateMe);
 router.delete("/deleteMe", protect, deleteMe);
 
