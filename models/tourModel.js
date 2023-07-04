@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
+// const User = require("./userModel");
 
 const tourSchema = new mongoose.Schema(
   {
@@ -65,6 +66,35 @@ const tourSchema = new mongoose.Schema(
     ratingsAverage: {
       type: String,
     },
+    startLocation: {
+      type: {
+        type: String,
+        default: "Point",
+        enum: ["Point"],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: "Point",
+          enum: ["Point"],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+      },
+    ],
     createdAt: {
       type: Date,
       default: Date.now(),
@@ -76,18 +106,40 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "guides",
+    select: "-__v -passwordChangedAt",
+  });
+  next();
+});
+
 tourSchema.pre("save", function (next) {
   // console.log(doc);
   this.slug = slugify(this.name, { lower: true });
   next();
 });
+
+tourSchema.virtual("durationWeek").get(function () {
+  return this.duration / 7;
+});
+
+tourSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "tour",
+  localField: "_id",
+});
+
+// implementing Embedding/denormalzing
+// tourSchema.pre("save", async function (next) {
+//   const guidesPromises = this.guides.map(async (el) => await User.findById(el));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
 // tourSchema.pre("find", function (next) {
 //   this.find({ difficulty: { $ne: "easy" } });
 //   next();
 // });
-// tourSchema.virtual("durationWeek").get(function () {
-//   return this.duration / 7;
-// }
 
 const Tour = mongoose.model("Tour", tourSchema);
 

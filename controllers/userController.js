@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const APIFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const { filterObj } = require("../utils/helpers");
 
 module.exports.getAllUsers = catchAsync(async (req, res) => {
   let queryStr = { ...req.query };
@@ -48,3 +49,32 @@ module.exports.deleteUser = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+exports.updateMe = catchAsync(async (req, res) => {
+  if (req.body.password || req.body.passwordConfirm) {
+    throw new AppError(
+      "This route is not for passowrd updates, Please user /updaetePassword",
+      400
+    );
+  }
+  const filteredObj = filterObj(req.body, "name", "email");
+  const updateUser = await User.findByIdAndUpdate(req.user.id, filteredObj, {
+    new: true,
+    runValidators: true,
+  });
+  res.status(200).json({
+    status: "success",
+    data: updateUser,
+    message: "user data updated successfully",
+  });
+});
+exports.deleteMe = catchAsync(async (req, res) => {
+  const updateUser = await User.findByIdAndUpdate(req.user.id, {
+    active: false,
+  });
+  res.status(204).json({
+    status: "success",
+    data: null,
+    message: "Account has been deleted successfully",
+  });
+});

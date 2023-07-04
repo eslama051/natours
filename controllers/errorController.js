@@ -1,6 +1,7 @@
 const AppError = require("../utils/appError");
 
 const sendErrorDev = (res, err) => {
+  // console.log(err);
   res.status(err.statusCode).json({
     status: err.status,
     error: err,
@@ -18,7 +19,7 @@ const sendErrorProd = (res, err) => {
     });
   } else {
     // log error
-    // console.error(err);
+    console.error(err);
     // send generic message
     res.status(500).json({
       status: "error",
@@ -41,6 +42,14 @@ const handleValidationErrorsDB = (err) => {
   message = `Invalid input data. ${errors.join(". ")}`;
   return new AppError(message, 400);
 };
+const handleTokenErrorDB = () => {
+  message = `Invalid Token. Please log in again!`;
+  return new AppError(message, 401);
+};
+const handleTokenExpiredErrorDB = () => {
+  message = `Your token has expired, plase login again.`;
+  return new AppError(message, 401);
+};
 
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
@@ -52,11 +61,18 @@ module.exports = (err, req, res, next) => {
     if (err.name == "CastError") {
       err = handleCastErrorDB(err);
     }
-    if (err.codeName == "DuplicateKey") {
+    // handle duplicated key
+    if (err.code == "11000") {
       err = handleDuplicateKeyDB(err);
     }
     if (err.name == "ValidationError") {
       err = handleValidationErrorsDB(err);
+    }
+    if (err.name == "JsonWebTokenError") {
+      err = handleTokenErrorDB();
+    }
+    if (err.name == "TokenExpiredError") {
+      err = handleTokenExpiredErrorDB();
     }
     sendErrorProd(res, err);
   }

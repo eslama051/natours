@@ -40,7 +40,10 @@ class APIFeatures {
     const limit = +this.queryStr.limit || contorllerLimit || 15;
     const skip = (page - 1) * limit;
     let last_page = 1;
-    const numTours = await model.countDocuments();
+    const qc = this.query.toConstructor();
+    const cq = new qc();
+    const numTours = await cq.countDocuments();
+    console.log(numTours);
     if (this.queryStr.page) {
       last_page = Math.ceil(numTours / limit);
       if (skip >= numTours)
