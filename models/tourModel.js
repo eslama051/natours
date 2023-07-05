@@ -116,6 +116,7 @@ const tourSchema = new mongoose.Schema(
 
 tourSchema.index({ price: 1 });
 tourSchema.index({ user: 1, tour: 1 }, { unique: true });
+tourSchema.index({ startLocation: "2dsphere" });
 
 tourSchema.pre(/^find/, function (next) {
   this.populate({
