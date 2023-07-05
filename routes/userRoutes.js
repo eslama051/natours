@@ -16,6 +16,7 @@ const {
   resetPassword,
   updatePassword,
   protect,
+  restrictTo,
 } = require("../controllers/authController");
 
 const router = require("express").Router();
@@ -24,12 +25,20 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.post("/forget-password", forgetPassword);
 router.post("/reset-password/:token", resetPassword);
-router.patch("/update-password", protect, updatePassword);
-router.get("/Me", protect, getMe, getUser);
-router.post("/updateMe", protect, updateMe);
-router.delete("/deleteMe", protect, deleteMe);
+
+// protect all routes that comes after this middelware
+router.use(protect);
+
+router.patch("/update-password", updatePassword);
+router.get("/Me", getMe, getUser);
+router.post("/updateMe", updateMe);
+router.delete("/deleteMe", deleteMe);
+
+// only admins can access these routes
+router.use(restrictTo("amdin"));
 
 router.route(`/`).get(getAllUsers).post(createUser);
+
 router.route(`/:id`).get(getUser).patch(updateUser).delete(deleteUser);
 
 module.exports = router;

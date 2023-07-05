@@ -9,6 +9,7 @@ exports.getAll = (Model) =>
       .sort()
       .limitFields();
     apiFeatures = await apiFeatures.paginate(Model);
+    // const docs = await apiFeatures.query.explain();
     const docs = await apiFeatures.query;
     res.status(200).json({
       data: {

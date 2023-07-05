@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Tour = require("./tourModel");
 
 const reviewSechma = new mongoose.Schema(
   {
@@ -34,6 +35,43 @@ const reviewSechma = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+// start :: calc the AverageRatings
+reviewSechma.statics.calcAverageRatings = async function (tourId) {
+  const stats = await this.aggregate([
+    {
+      $match: {
+        tour: tourId,
+      },
+    },
+    {
+      $group: {
+        _id: "$tour",
+        nRating: { $sum: 1 },
+        avgRating: { $avg: "$rating" },
+      },
+    },
+  ]);
+  await Tour.findByIdAndUpdate(tourId, {
+    ratingsAverage: stats[0].avgRating,
+    ratingsQuantity: stats[0].nRating,
+  });
+};
+// when creating new review
+reviewSechma.post("save", function () {
+  this.constructor.calcAverageRatings(this.tour);
+});
+//  when updating and deleteing  a review
+reviewSechma.pre(/^findOneAnd/, async function (next) {
+  const qc = this.toConstructor();
+  const cq = new qc();
+  this.r = await cq.findOne();
+
+  next();
+});
+reviewSechma.post(/^findOneAnd/, async function () {
+  this.r.constructor.calcAverageRatings(this.r.tour);
+});
+// End :: calc the AverageRatings
 
 reviewSechma.pre(/^find/, function (next) {
   // this.populate([
