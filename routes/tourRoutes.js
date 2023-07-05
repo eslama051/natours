@@ -4,6 +4,7 @@ const {
   createTour,
   updateTour,
   deleteTour,
+  getTourWithin,
 } = require("../controllers/tourController");
 
 const { protect, restrictTo } = require("../controllers/authController");
@@ -21,6 +22,7 @@ const reviewRouter = require("./reviewRoutes");
 //   .post(protect, restrictTo("user"), createReview)
 //   .get(getAllTourReviews);
 
+//nested route
 router.use("/:tourId/reviews", reviewRouter);
 
 router
@@ -32,6 +34,9 @@ router
   .get(getTour)
   .patch(protect, restrictTo("admin", "lead-guide"), updateTour)
   .delete(protect, restrictTo("admin", "lead-guide"), deleteTour);
+
+//get tour within a specific raduis route
+router.get("/tour-within/:distance/center/:latlng/unit/:unit", getTourWithin);
 
 // creata a review
 

@@ -51,10 +51,17 @@ reviewSechma.statics.calcAverageRatings = async function (tourId) {
       },
     },
   ]);
-  await Tour.findByIdAndUpdate(tourId, {
-    ratingsAverage: stats[0].avgRating,
-    ratingsQuantity: stats[0].nRating,
-  });
+  if (stats.length) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsAverage: stats[0].avgRating,
+      ratingsQuantity: stats[0].nRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsAverage: 4.5,
+      ratingsQuantity: 0,
+    });
+  }
 };
 // when creating new review
 reviewSechma.post("save", function () {
@@ -65,7 +72,6 @@ reviewSechma.pre(/^findOneAnd/, async function (next) {
   const qc = this.toConstructor();
   const cq = new qc();
   this.r = await cq.findOne();
-
   next();
 });
 reviewSechma.post(/^findOneAnd/, async function () {
