@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const AppError = require("../utils/appError");
+// const AppError = require("../utils/appError");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
   },
+  avatar: { type: String },
   role: {
     type: String,
     enum: {

@@ -35,7 +35,7 @@ class APIFeatures {
     return this;
   }
 
-  async paginate(model, contorllerLimit) {
+  async paginate(contorllerLimit) {
     const page = +this.queryStr.page || 1;
     const limit = +this.queryStr.limit || contorllerLimit || 15;
     const skip = (page - 1) * limit;

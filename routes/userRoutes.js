@@ -18,6 +18,7 @@ const {
   protect,
   restrictTo,
 } = require("../controllers/authController");
+const { uploadImages } = require("../utils/upload");
 
 const router = require("express").Router();
 
@@ -31,10 +32,23 @@ router.use(protect);
 
 router.patch("/update-password", updatePassword);
 router.get("/Me", getMe, getUser);
-router.post("/updateMe", updateMe);
+router.post(
+  "/updateMe",
+  uploadImages.fields([
+    {
+      name: "avatar",
+      maxCount: 1,
+    },
+    {
+      name: "image",
+      maxCount: 1,
+    },
+  ]),
+  updateMe
+);
 router.delete("/deleteMe", deleteMe);
 
-// only admins can access these routes
+// only admins  can access these routes
 router.use(restrictTo("amdin"));
 
 router.route(`/`).get(getAllUsers).post(createUser);

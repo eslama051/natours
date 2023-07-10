@@ -58,7 +58,7 @@ reviewSechma.statics.calcAverageRatings = async function (tourId) {
     });
   } else {
     await Tour.findByIdAndUpdate(tourId, {
-      ratingsAverage: 4.5,
+      ratingsAverage: 4.5 ,
       ratingsQuantity: 0,
     });
   }
